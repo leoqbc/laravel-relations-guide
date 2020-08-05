@@ -114,6 +114,86 @@ $post->categorias()->attach(cat->id);
 $post->categorias()->attach([3, 8, 14, 22]); // IDs precisam existir na tabela Categorias
 ```
 
+## Buscas e filtros com o ORM
+
+```php
+// Todos os Posts sempre retorna um collection
+$posts = App\Post::all();
+```
+
+```php
+// Recuperando um unico post pelo id: 2
+// obs: returna o objeto do model ex:  Post
+$posts = App\Post::find(2);
+```
+
+```php
+// Recuperando post com filtro where
+$posts = App\Post::where('titulo', 'Livros de TI')->get();
+```
+
+```php
+// Recuperando produtos com filtro where qtd > 0
+$produto = App\Produto::where('qtd', '>', 0)->get();
+```
+
+```php
+// Filtros com and (where qtd > 0 and preco > 0)
+$produto = App\Produto::where('qtd', '>', 0)->where('preco', '>', 0)->get();
+```
+
+```php
+// Filtros com or (where nome like 'camiseta' or nome like 'camisa')
+$produto = App\Produto::where('nome', 'like', 'camiseta')
+                        ->orWhere('nome', 'like', 'camisa')->get();
+```
+
+```php
+// Filtros campo que contém uma lista
+$produto = App\Produto::whereIn('nome', ['camisa', 'camiseta', 'blusa', 'blusão'])->get();
+```
+
+```php
+// Filtro com ordeção pelo nome decrescente
+$produto = App\Produto::where('estoque', '>', 0)->orderBy('nome', 'desc')->get();
+```
+
+```php
+// Pega os 2 primeiros resultados
+$produto = App\Produto::where('estoque', '>', 0)->take(2)->get();
+```
+
+```php
+// Pula os 5 primeiros registros(offset) e retorna o próximos 5 registros(limit)
+$produto = App\Produto::where('estoque', '>', 0)->offset(5)->limit(5)->get();
+```
+
+```php
+// Retornando relacionamentos 1:N
+$post = App\Post::find(4);
+
+// Retorna um collection de models Like(deve ser configurado no model Post)
+$likes = $post->likes;
+```
+
+```php
+// Filtro em relações
+$post = App\Post::find(4);
+
+// Retorna um collection de models Like(deve ser configurado no model Post)
+// onde a data de criação aconteceu hoje
+// observe os "()" em likes
+$likes = $post->likes()->where('created_at', '>', date('Y-m-d 00:00:00'))->get();
+```
+
+```php
+// busca por Posts que tem likes
+$posts = App\Post::has('likes')->get();
+
+// busca por Posts que não tem likes
+$posts = App\Post::doesntHave('likes')->get();
+```
+
 ##### Qualquer colaboração é bem vinda, lembrando é apenas uma simples documentação para aula, existe muito mais funcionalidades que podem ser encontradas em:
 
 [Documentação Eloquent ORM](https://laravel.com/docs/7.x/eloquent-relationships)
